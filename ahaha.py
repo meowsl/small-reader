@@ -1,10 +1,17 @@
-import fitz, easyocr
+import fitz, os, sys
 from PyPDF2 import PdfReader
+import pytesseract
+from pdf2image import convert_from_path
+from typing import Tuple
+from PIL import Image
 
-def extract_img(img):
-    reader = easyocr.Reader(['ru'], gpu=True)
-    results = reader.readtext(img, detail=0)
-    print(results)
+
+
+def extract_img(filename):
+    img =Image.open(filename)
+    text = pytesseract.image_to_string(img, lang='rus')
+    print(text)
+    os.remove(filename)
 
 def convert_pdf(filename):
     reader = PdfReader(f'inputs/{filename}.pdf')
@@ -22,5 +29,8 @@ def convert_pdf(filename):
     doc.close()
 
 if __name__ == "__main__":
-    print('Ввод имени файла:')
-    convert_pdf(input())
+    pytesseract.pytesseract.tesseract_cmd = 'C:/Program Files/Tesseract-OCR/tesseract.exe'
+    # custom_config = r'--oem 3 --psm 13'
+
+    file = 'reglament_zpps'
+    convert_pdf(file)
