@@ -5,22 +5,34 @@ import pytesseract
 from pdf2image import convert_from_path
 from typing import Tuple
 from PIL import Image
+import io
 import config
 
 
-def extract_img(filename):
+# def extract_img(filename):
+#     '''
+#     ОБРАБОТКА ТЕКСТА С PNG
+#     '''
+#     img =Image.open(filename) # Открытие файла png в переменной
+#     text = pytesseract.image_to_string(img, lang='rus') # Конвертация в строку
+#     # Удаление лишних символов
+#     text = text.replace("\r", " ")
+#     text = text.replace("\n", " ")
+
+#     # Тут вместо вывода текста нужно будет сделать, чтобы текст передавался в модель джанги этим я сам займусь
+#     print(text)
+#     os.remove(filename)
+
+def extract_img(bytelist):
     '''
     ОБРАБОТКА ТЕКСТА С PNG
     '''
-    img =Image.open(filename) # Открытие файла png в переменной
+    img =Image.open(io.BytesIO(bytelist)) # Открытие файла png в переменной
     text = pytesseract.image_to_string(img, lang='rus') # Конвертация в строку
-    # Удаление лишних символов
-    text = text.replace("\r", " ")
-    text = text.replace("\n", " ")
-
-    # Тут вместо вывода текста нужно будет сделать, чтобы текст передавался в модель джанги этим я сам займусь
+    text = text.replace("\r", ' ')
+    text = text.replace("\n", ' ')
     print(text)
-    os.remove(filename)
+
 
 def convert_pdf(filename):
     '''
@@ -35,9 +47,8 @@ def convert_pdf(filename):
     for i in range(len(count_page)): # Цикл для обработки всех страниц
         page = doc.load_page(i)  # number of page
         pix = page.get_pixmap() # Конвертация pdf страницы в png
-        output = f"outfile{i}.png" # Имя файла на выходе
-        pix.save(output) # Сохранения png в директории
-        extract_img(output) # Вызов функции
+        byt = pix.tobytes(output='png')
+        extract_img(byt) # Вызов функции
 
     doc.close()
 
