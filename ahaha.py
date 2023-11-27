@@ -3,7 +3,7 @@ from PyPDF2 import PdfReader
 from pdf2image import convert_from_path
 from typing import Tuple
 from PIL import Image
-import config
+from dotenv import load_dotenv
 
 def extract_img(bytelist):
     '''
@@ -37,6 +37,7 @@ if __name__ == "__main__":
     '''
     Запуск программы
     '''
-    pytesseract.pytesseract.tesseract_cmd = config.pytesseract_path
+    load_dotenv()
+    pytesseract.pytesseract.tesseract_cmd = os.environ['TESSERACT']
     file = input() # указание имени файла
     convert_pdf(file)
